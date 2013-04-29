@@ -3,7 +3,7 @@
   (c) Hiroshi Saito <hiroshi3110@gmail.com>
   CC BY 2.0
 */
-KnockoutFire = {version: "0.0.3"}
+KnockoutFire = {version: "0.0.3b"}
 /*
   
 */
@@ -86,14 +86,14 @@ ko.extenders.firebaseArray = function(self, options) {
         firebaseRef = firebaseRef.limit(map[".limit"])
     }    
     if (typeof(map[".startAt"]) != "undefined") {
-        if (map[".startAt"] instanceof Object) {
+        if (typeof(map[".startAt"]) == "object") {
             firebaseRef = firebaseRef.startAt(map[".startAt"][".priority"], map[".startAt"][".name"])
         } else {
             firebaseRef = firebaseRef.startAt(map[".startAt"])
         }
     }
     if (typeof(map[".endAt"]) != "undefined") {
-        if (map[".endAt"] instanceof Object) {
+        if (typeof(map[".endAt"]) == "object") {
             firebaseRef = firebaseRef.endAt(map[".endAt"][".priority"], map[".endAt"][".name"])
         } else {
             firebaseRef = firebaseRef.endAt(map[".endAt"])
@@ -141,7 +141,16 @@ ko.extenders.firebaseArray = function(self, options) {
             var childNames = KnockoutFire.utils.matchedProperties(map[childVariable], /^[^\$\.][^\/]+$/);
             if (childNames.length > 0) {
                 childNames.forEach(function(childName, i) {
-                    val[childName] = self.newItem[childName]();
+                    // try defaults
+                    if (typeof(map[".newItem"][childName]) == "function") {
+                        var defaultValue = map[".newItem"][childName]();
+                        if (typeof(val) != "object") {
+                            val = {"val": val};
+                        }
+                        val[childName] = defaultValue;
+                    } else {
+                        val[childName] = self.newItem[childName]();
+                    }
                 });
             } else {
                 val = true;
@@ -159,6 +168,9 @@ ko.extenders.firebaseArray = function(self, options) {
                     childNames.forEach(function(childName, i) {
                         self.newItem[childName]("");
                     });
+                    if ( typeof(map[".newItem"][".on_success"]) == "function" ) {
+                        map[".newItem"][".on_success"]() ;
+                    }
                 }
             };
             if (name) {
