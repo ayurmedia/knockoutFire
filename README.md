@@ -2,7 +2,22 @@ knockoutFire
 ============
 
 KnockoutFire map [Firebase](https://www.firebase.com) json structure into HTML structure using [KnockoutJs](http://knockoutjs.com).
+
 [Live demo at jsFiddle](http://jsfiddle.net/4E8nh/).
+
+How to use
+----------
+
+### Github pages as CDN
+
+[Latest release](http://hiroshi.github.io/knockoutFire/knockoutfire.js) may have breaking changes.
+
+I recommend to use versioned release, like [0.0.4](http://hiroshi.github.io/knockoutFire/knockoutfire-0.0.4.js) instead.
+
+    <script type="text/javascript" src="//hiroshi.github.io/knockoutFire/knockoutfire-0.0.4.js"></script>
+
+Also see [CHANGELOG](https://github.com/hiroshi/knockoutFire/blob/master/CHANGELOG.md).
+
 
 Example
 -------
@@ -44,7 +59,8 @@ var viewModel = KnockoutFire.observable(firebase, {
 ko.applyBindings(viewModel, document.getElementById("viewModel"));
 ```
 
-## API Reference
+API Reference
+-------------
 
 ### KnockoutFire.observable(firebaseRef, map)
 
@@ -137,6 +153,22 @@ If you need a `priority` to be set;
 ```javascript
 ".newItem": {
   ".priority": function() { return Date.now() }
+}
+```
+
+If you need a default value rather than from a data-bind;
+
+```javascript
+".newItem": {
+  isdone: function(){ return false; }
+}
+```
+
+If you need a callback on success;
+
+```javascript
+".newItem": {
+  ".on_success": function(){ do_someting(); }
 }
 ```
 
