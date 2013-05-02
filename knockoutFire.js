@@ -3,7 +3,7 @@
   (c) Hiroshi Saito <hiroshi3110@gmail.com>
   CC BY 2.0
 */
-KnockoutFire = {version: "0.0.3"}
+KnockoutFire = {version: "0.0.5b"}
 /*
   
 */
@@ -75,9 +75,9 @@ ko.extenders.firebaseArray = function(self, options) {
             self.splice(reverse ? index : index + 1, 0, child);
         } else {
             if (reverse) {
-                self.unshift(child);
-            } else {
                 self.push(child);
+            } else {
+                self.unshift(child);
             }
         }
     };
@@ -86,14 +86,14 @@ ko.extenders.firebaseArray = function(self, options) {
         firebaseRef = firebaseRef.limit(map[".limit"])
     }    
     if (typeof(map[".startAt"]) != "undefined") {
-        if (typeof(map[".startAt"]) == "object") {
+        if (map[".startAt"] instanceof Object) {
             firebaseRef = firebaseRef.startAt(map[".startAt"][".priority"], map[".startAt"][".name"])
         } else {
             firebaseRef = firebaseRef.startAt(map[".startAt"])
         }
     }
     if (typeof(map[".endAt"]) != "undefined") {
-        if (typeof(map[".endAt"]) == "object") {
+        if (map[".endAt"] instanceof Object) {
             firebaseRef = firebaseRef.endAt(map[".endAt"][".priority"], map[".endAt"][".name"])
         } else {
             firebaseRef = firebaseRef.endAt(map[".endAt"])
@@ -143,8 +143,7 @@ ko.extenders.firebaseArray = function(self, options) {
                 childNames.forEach(function(childName, i) {
                     // try defaults
                     if (typeof(map[".newItem"][childName]) == "function") {
-                        var defaultValue = map[".newItem"][childName]();
-                        val[childName] = defaultValue;
+                        val[childName] = map[".newItem"][childName]();
                     } else {
                         val[childName] = self.newItem[childName]();
                     }
@@ -201,12 +200,11 @@ ko.extenders.firebasePrimitive = function(self, options) {
 
 */
 ko.extenders.firebase = function(self, options) {
-    // if database is missing an attribute we continue
-    if( typeof self() == 'null' || options.map == true ) return; 
-    
     var firebase = options.firebaseRef;
     self.firebase = firebase;
-    self().firebase = firebase;
+    if (self() instanceof Object) {
+        self().firebase = firebase;
+    }
 };
 /*
   
